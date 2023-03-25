@@ -19,16 +19,32 @@
 .lifts-container {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  align-items: flex-end;
   gap: 10px;
-  width: 100%;
+  width: fit-content;
+  /* background-color: green; */
+  position:absolute;
+  bottom: 0;
+  left: 170px;
+  height: 100%;
 }
 
 .lift {
   width: 100px;
-  height: 100px;
+  height: 165px;
   background-color: rgb(241, 241, 241);
+  border: 2px solid rgb(255, 4, 146);
+  animation: shimmy 8s infinite;
 }
+
+/* @keyframes shimmy {
+  0% {
+    transform: translate(0, 0);    
+  }
+  100% {
+    transform: translateY(-660px);
+  }
+} */
 
 .form {
   background-color: lightgray;
@@ -77,4 +93,10 @@
 
 .primary-btn:active{
     background-color: rgb(163, 163, 178,0.4);
+}
+
+.apartment{
+  background-color: red;
+  position: relative;
+  height: fit-content;
 }
