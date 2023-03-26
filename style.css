@@ -23,28 +23,64 @@
   gap: 10px;
   width: fit-content;
   /* background-color: green; */
-  position:absolute;
+  position: absolute;
   bottom: 0;
   left: 170px;
   height: 100%;
 }
 
 .lift {
-  width: 100px;
+  width: 150px;
   height: 165px;
   background-color: rgb(241, 241, 241);
   border: 2px solid rgb(255, 4, 146);
   animation: shimmy 8s infinite;
+  display: flex;
+  overflow: hidden;
+}
+.door {
+  width: 50%;
+  background-color: pink;
+  opacity: 0.7;
+  height: 100%;
+  border-right: 2px solid black;
+  transition: 2.5s;
 }
 
-/* @keyframes shimmy {
+.left-door {
+  border-right: 2px solid black;
+}
+.right-door {
+  border-left: 2px solid black;
+}
+.left-door-open {
+  animation: left_door 2.5s ease-in-out;
+}
+.right-door-open {
+  animation: right_door 2.5s ease-in-out;
+}
+@keyframes left_door {
   0% {
-    transform: translate(0, 0);    
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-100%);
   }
   100% {
-    transform: translateY(-660px);
+    transform: translateX(0);
   }
-} */
+}
+@keyframes right_door {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
 
 .form {
   background-color: lightgray;
@@ -77,7 +113,7 @@
   justify-content: space-around;
 }
 .floor-name {
-    color: black;
+  color: black;
 }
 .primary-btn {
   background-color: rgb(163, 163, 178);
@@ -91,11 +127,11 @@
   border-radius: 4px;
 }
 
-.primary-btn:active{
-    background-color: rgb(163, 163, 178,0.4);
+.primary-btn:active {
+  background-color: rgb(163, 163, 178, 0.4);
 }
 
-.apartment{
+.apartment {
   background-color: red;
   position: relative;
   height: fit-content;
