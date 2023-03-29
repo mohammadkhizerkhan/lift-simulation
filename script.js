@@ -15,28 +15,37 @@ lifts.addEventListener("change", (e) => {
 });
 
 const openCloseDoors = (lift, position) => {
-  const openTiming = 2000 * position;
-  const closeTiming = 2000 * position + 2500;
+  const openTiming =
+    2000 * Math.abs(position - Number(lift.dataset.liftPosition));
+  const closeTiming =
+    2000 * Math.abs(position - Number(lift.dataset.liftPosition)) + 2500;
+  lift.setAttribute("data-lift-status", "busy");
+  // const openTiming = 1000 * position;
+  // const closeTiming = 1000 * position + 2500;
   setTimeout(() => {
     console.log("openint");
     lift.childNodes[0].classList.add("left-door-open");
     lift.childNodes[1].classList.add("right-door-open");
     lift.setAttribute("data-lift-status", "free");
+    lift.setAttribute("data-lift-position", position);
   }, openTiming);
   setTimeout(() => {
     console.log("closing");
     lift.childNodes[0].classList.remove("left-door-open");
     lift.childNodes[1].classList.remove("right-door-open");
+    console.log("dataset position 2", Number(lift.dataset.liftPosition));
   }, closeTiming);
 };
 
 const moveLift = (position) => {
+  console.log("--------", position);
   const lifts = document.querySelectorAll(".lift");
+  const liftPosition = Math.abs(
+    Number(lifts[0].dataset.liftPosition) - position
+  );
   const distance = 165 * (position - 1);
   lifts[0].style.transform = `translateY(-${distance}px)`;
-  lifts[0].style.transition = `all ${2 * position}s linear`;
-  lifts[0].setAttribute("data-lift-status", "busy");
-  lifts[0].setAttribute("data-lift-position", `${position}`);
+  lifts[0].style.transition = `all ${2 * liftPosition}s linear`;
   openCloseDoors(lifts[0], position);
 };
 
