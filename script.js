@@ -3,6 +3,7 @@ const lifts = document.getElementById("lift");
 const liftContainer = document.querySelector(".lifts-container");
 const floorsContainer = document.querySelector(".floors-container");
 const submitBtn = document.getElementById("submit");
+const allLifts = document.querySelectorAll(".lift");
 let noOfLifts = 0;
 let noOfFloors = 0;
 
@@ -17,40 +18,56 @@ lifts.addEventListener("change", (e) => {
 const openCloseDoors = (lift, position) => {
   const openTiming =
     2000 * Math.abs(position - Number(lift.dataset.liftPosition));
+
   const closeTiming =
     2000 * Math.abs(position - Number(lift.dataset.liftPosition)) + 2500;
   lift.setAttribute("data-lift-status", "busy");
-  // const openTiming = 1000 * position;
-  // const closeTiming = 1000 * position + 2500;
+
+  // console.log(`lift number ${lift.getAttribute('class')} is ${lift.dataset.liftStatus}`);
+
   setTimeout(() => {
-    console.log("openint");
     lift.childNodes[0].classList.add("left-door-open");
     lift.childNodes[1].classList.add("right-door-open");
-    lift.setAttribute("data-lift-status", "free");
     lift.setAttribute("data-lift-position", position);
   }, openTiming);
+
   setTimeout(() => {
-    console.log("closing");
     lift.childNodes[0].classList.remove("left-door-open");
     lift.childNodes[1].classList.remove("right-door-open");
-    console.log("dataset position 2", Number(lift.dataset.liftPosition));
+    lift.setAttribute("data-lift-status", "free");
+    // console.log(`lift number ${lift.getAttribute('class')} is ${lift.dataset.liftStatus}`);
   }, closeTiming);
 };
 
-const moveLift = (position) => {
-  console.log("--------", position);
-  const lifts = document.querySelectorAll(".lift");
-  const liftPosition = Math.abs(
-    Number(lifts[0].dataset.liftPosition) - position
+const calculateClosestLift = (floorNum) => {
+  const freeLifts = Array.from(document.querySelectorAll(".lift")).filter(
+    (lift) => lift.dataset.liftStatus === "free"
   );
+  const closest =
+    freeLifts.length > 0 &&
+    freeLifts.reduce(function (prev, curr) {
+      return Math.abs(curr.dataset.liftPosition - floorNum) <
+        Math.abs(prev.dataset.liftPosition - floorNum)
+        ? curr
+        : prev;
+    });
+  return closest;
+};
+
+const moveLift = (position) => {
+  const freeLift = calculateClosestLift(position);
   const distance = 165 * (position - 1);
-  lifts[0].style.transform = `translateY(-${distance}px)`;
-  lifts[0].style.transition = `all ${2 * liftPosition}s linear`;
-  openCloseDoors(lifts[0], position);
+  if(freeLift){
+    const liftPosition = Math.abs(
+      Number(freeLift.dataset.liftPosition) - position
+    );
+    freeLift.style.transform = `translateY(-${distance}px)`;
+    freeLift.style.transition = `all ${2 * liftPosition}s linear`;
+    openCloseDoors(freeLift, position);
+  }
 };
 
 const handleFloorBtn = (floorNum) => {
-  console.log("=======", floorNum);
   moveLift(floorNum);
 };
 
@@ -59,7 +76,7 @@ const createLifts = () => {
     const liftDiv = document.createElement("div");
     liftDiv.classList.add("lift", `lift-${i + 1}`);
     liftDiv.setAttribute("data-lift-status", "free");
-    liftDiv.setAttribute("data-lift-position", `${i + 1}`);
+    liftDiv.setAttribute("data-lift-position", '1');
 
     const left_door = document.createElement("div");
     left_door.classList.add("door", "left-door");
