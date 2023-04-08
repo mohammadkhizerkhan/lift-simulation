@@ -3,6 +3,9 @@ const lifts = document.getElementById("lift");
 const liftContainer = document.querySelector(".lifts-container");
 const floorsContainer = document.querySelector(".floors-container");
 const submitBtn = document.getElementById("submit");
+const allLifts = document.querySelectorAll(".lift");
+const reCreateBtn = document.querySelector(".recreate-btn");
+const formContainer = document.querySelector(".form");
 let noOfLifts = 0;
 let noOfFloors = 0;
 
@@ -15,34 +18,59 @@ lifts.addEventListener("change", (e) => {
 });
 
 const openCloseDoors = (lift, position) => {
-  const openTiming = 2000 * position;
-  const closeTiming = 2000 * position + 2500;
+  const openTiming =
+    2000 * Math.abs(position - Number(lift.dataset.liftPosition));
+
+  // adding 2.5s extra because after opening time
+  const closeTiming =
+    2000 * Math.abs(position - Number(lift.dataset.liftPosition)) + 2500;
+  lift.setAttribute("data-lift-status", "busy");
+
   setTimeout(() => {
-    console.log("openint");
     lift.childNodes[0].classList.add("left-door-open");
     lift.childNodes[1].classList.add("right-door-open");
-    lift.setAttribute("data-lift-status", "free");
+    lift.setAttribute("data-lift-position", position);
   }, openTiming);
+
   setTimeout(() => {
-    console.log("closing");
     lift.childNodes[0].classList.remove("left-door-open");
     lift.childNodes[1].classList.remove("right-door-open");
+    // making lift free after doors are closed
+    lift.setAttribute("data-lift-status", "free");
   }, closeTiming);
 };
 
-const moveLift = (position) => {
-  const lifts = document.querySelectorAll(".lift");
-  const distance = 165 * (position - 1);
-  lifts[0].style.transform = `translateY(-${distance}px)`;
-  lifts[0].style.transition = `all ${2 * position}s linear`;
-  lifts[0].setAttribute("data-lift-status", "busy");
-  lifts[0].setAttribute("data-lift-position", `${position}`);
-  openCloseDoors(lifts[0], position);
+const calculateClosestLift = (floorNum) => {
+  // filtering all the free lifts
+  const freeLifts = Array.from(document.querySelectorAll(".lift")).filter(
+    (lift) => lift.dataset.liftStatus === "free"
+  );
+  // getting closest lift
+  const closest =
+    freeLifts.length > 0 &&
+    freeLifts.reduce(function (prev, curr) {
+      return Math.abs(curr.dataset.liftPosition - floorNum) <
+        Math.abs(prev.dataset.liftPosition - floorNum)
+        ? curr
+        : prev;
+    });
+  return closest;
 };
 
-const handleFloorBtn = (floorNum) => {
-  console.log("=======", floorNum);
-  moveLift(floorNum);
+const handleFloorBtn = (position) => {
+  // getting a free lift
+  const freeLift = calculateClosestLift(position);
+  // distance lift shoult travel
+  const distance = 165 * (position - 1);
+  if (freeLift) {
+    // getting the lift position from calling position
+    const liftPosition = Math.abs(
+      Number(freeLift.dataset.liftPosition) - position
+    );
+    freeLift.style.transform = `translateY(-${distance}px)`;
+    freeLift.style.transition = `all ${2 * liftPosition}s linear`;
+    openCloseDoors(freeLift, position);
+  }
 };
 
 const createLifts = () => {
@@ -50,7 +78,7 @@ const createLifts = () => {
     const liftDiv = document.createElement("div");
     liftDiv.classList.add("lift", `lift-${i + 1}`);
     liftDiv.setAttribute("data-lift-status", "free");
-    liftDiv.setAttribute("data-lift-position", `${i + 1}`);
+    liftDiv.setAttribute("data-lift-position", "1");
 
     const left_door = document.createElement("div");
     left_door.classList.add("door", "left-door");
@@ -77,14 +105,14 @@ const createFloors = () => {
     floorHeader.innerText = `Floor ${i}`;
 
     const floorBtnUp = document.createElement("button");
-    floorBtnUp.classList.add("primary-btn");
+    floorBtnUp.classList.add("btn");
     floorBtnUp.innerText = "up";
     floorBtnUp.addEventListener("click", () => {
       handleFloorBtn(i);
     });
 
     const floorBtnDown = document.createElement("button");
-    floorBtnDown.classList.add("primary-btn");
+    floorBtnDown.classList.add("btn");
     floorBtnDown.innerText = "down";
     floorBtnDown.addEventListener("click", () => {
       handleFloorBtn(i);
@@ -98,7 +126,20 @@ const createFloors = () => {
   }
 };
 
-submitBtn.addEventListener("click", () => {
-  createFloors();
-  createLifts();
+submitBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  if (noOfFloors > 15 && noOfLifts > 10) {
+    alert("you can't create more than 15 floors and 10 lifts");
+    floors.value = 0;
+    lifts.value = 0;
+  } else if (noOfFloors > 0 && noOfLifts > 0) {
+    formContainer.style.display = "none";
+    reCreateBtn.style.display = "block";
+    createFloors();
+    createLifts();
+  }
+});
+
+reCreateBtn.addEventListener("click", () => {
+  location.reload();
 });
