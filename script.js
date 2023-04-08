@@ -4,6 +4,8 @@ const liftContainer = document.querySelector(".lifts-container");
 const floorsContainer = document.querySelector(".floors-container");
 const submitBtn = document.getElementById("submit");
 const allLifts = document.querySelectorAll(".lift");
+const reCreateBtn = document.querySelector(".recreate-btn");
+const formContainer = document.querySelector(".form");
 let noOfLifts = 0;
 let noOfFloors = 0;
 
@@ -54,10 +56,10 @@ const calculateClosestLift = (floorNum) => {
   return closest;
 };
 
-const moveLift = (position) => {
+const handleFloorBtn = (position) => {
   const freeLift = calculateClosestLift(position);
   const distance = 165 * (position - 1);
-  if(freeLift){
+  if (freeLift) {
     const liftPosition = Math.abs(
       Number(freeLift.dataset.liftPosition) - position
     );
@@ -67,16 +69,12 @@ const moveLift = (position) => {
   }
 };
 
-const handleFloorBtn = (floorNum) => {
-  moveLift(floorNum);
-};
-
 const createLifts = () => {
   for (let i = 0; i < Number(noOfLifts); i++) {
     const liftDiv = document.createElement("div");
     liftDiv.classList.add("lift", `lift-${i + 1}`);
     liftDiv.setAttribute("data-lift-status", "free");
-    liftDiv.setAttribute("data-lift-position", '1');
+    liftDiv.setAttribute("data-lift-position", "1");
 
     const left_door = document.createElement("div");
     left_door.classList.add("door", "left-door");
@@ -103,14 +101,14 @@ const createFloors = () => {
     floorHeader.innerText = `Floor ${i}`;
 
     const floorBtnUp = document.createElement("button");
-    floorBtnUp.classList.add("primary-btn");
+    floorBtnUp.classList.add("btn");
     floorBtnUp.innerText = "up";
     floorBtnUp.addEventListener("click", () => {
       handleFloorBtn(i);
     });
 
     const floorBtnDown = document.createElement("button");
-    floorBtnDown.classList.add("primary-btn");
+    floorBtnDown.classList.add('btn');
     floorBtnDown.innerText = "down";
     floorBtnDown.addEventListener("click", () => {
       handleFloorBtn(i);
@@ -124,7 +122,16 @@ const createFloors = () => {
   }
 };
 
-submitBtn.addEventListener("click", () => {
-  createFloors();
-  createLifts();
+submitBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  if (noOfFloors > 0 && noOfLifts > 0) {
+    formContainer.style.display = "none";
+    reCreateBtn.style.display = "block";
+    createFloors();
+    createLifts();
+  }
+});
+
+reCreateBtn.addEventListener("click", () => {
+  location.reload();
 });
