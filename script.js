@@ -25,8 +25,6 @@ const openCloseDoors = (lift, position) => {
     2000 * Math.abs(position - Number(lift.dataset.liftPosition)) + 2500;
   lift.setAttribute("data-lift-status", "busy");
 
-  // console.log(`lift number ${lift.getAttribute('class')} is ${lift.dataset.liftStatus}`);
-
   setTimeout(() => {
     lift.childNodes[0].classList.add("left-door-open");
     lift.childNodes[1].classList.add("right-door-open");
@@ -37,7 +35,6 @@ const openCloseDoors = (lift, position) => {
     lift.childNodes[0].classList.remove("left-door-open");
     lift.childNodes[1].classList.remove("right-door-open");
     lift.setAttribute("data-lift-status", "free");
-    // console.log(`lift number ${lift.getAttribute('class')} is ${lift.dataset.liftStatus}`);
   }, closeTiming);
 };
 
