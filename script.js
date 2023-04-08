@@ -21,6 +21,7 @@ const openCloseDoors = (lift, position) => {
   const openTiming =
     2000 * Math.abs(position - Number(lift.dataset.liftPosition));
 
+  // adding 2.5s extra because after opening time
   const closeTiming =
     2000 * Math.abs(position - Number(lift.dataset.liftPosition)) + 2500;
   lift.setAttribute("data-lift-status", "busy");
@@ -34,14 +35,17 @@ const openCloseDoors = (lift, position) => {
   setTimeout(() => {
     lift.childNodes[0].classList.remove("left-door-open");
     lift.childNodes[1].classList.remove("right-door-open");
+    // making lift free after doors are closed
     lift.setAttribute("data-lift-status", "free");
   }, closeTiming);
 };
 
 const calculateClosestLift = (floorNum) => {
+  // filtering all the free lifts
   const freeLifts = Array.from(document.querySelectorAll(".lift")).filter(
     (lift) => lift.dataset.liftStatus === "free"
   );
+  // getting closest lift
   const closest =
     freeLifts.length > 0 &&
     freeLifts.reduce(function (prev, curr) {
@@ -54,9 +58,12 @@ const calculateClosestLift = (floorNum) => {
 };
 
 const handleFloorBtn = (position) => {
+  // getting a free lift
   const freeLift = calculateClosestLift(position);
+  // distance lift shoult travel
   const distance = 165 * (position - 1);
   if (freeLift) {
+    // getting the lift position from calling position
     const liftPosition = Math.abs(
       Number(freeLift.dataset.liftPosition) - position
     );
