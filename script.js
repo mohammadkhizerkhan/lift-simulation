@@ -108,7 +108,7 @@ const createFloors = () => {
     });
 
     const floorBtnDown = document.createElement("button");
-    floorBtnDown.classList.add('btn');
+    floorBtnDown.classList.add("btn");
     floorBtnDown.innerText = "down";
     floorBtnDown.addEventListener("click", () => {
       handleFloorBtn(i);
@@ -124,7 +124,11 @@ const createFloors = () => {
 
 submitBtn.addEventListener("click", (e) => {
   e.preventDefault();
-  if (noOfFloors > 0 && noOfLifts > 0) {
+  if (noOfFloors > 15 && noOfLifts > 10) {
+    alert("you can't create more than 15 floors and 10 lifts");
+    floors.value = 0;
+    lifts.value = 0;
+  } else if (noOfFloors > 0 && noOfLifts > 0) {
     formContainer.style.display = "none";
     reCreateBtn.style.display = "block";
     createFloors();

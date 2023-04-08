@@ -19,6 +19,7 @@
   display: flex;
   align-items: center;
   min-width: 100vw;
+  max-width: fit-content;
   min-height: 100vh;
   flex-direction: column;
   background-color: var(--primary-color-light-1)
