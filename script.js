@@ -8,6 +8,7 @@ const reCreateBtn = document.querySelector(".recreate-btn");
 const formContainer = document.querySelector(".form");
 let noOfLifts = 0;
 let noOfFloors = 0;
+let liftRequestQueue = [];
 
 floors.addEventListener("change", (e) => {
   noOfFloors = e.target.value;
@@ -37,6 +38,8 @@ const openCloseDoors = (lift, position) => {
     lift.childNodes[1].classList.remove("right-door-open");
     // making lift free after doors are closed
     lift.setAttribute("data-lift-status", "free");
+    // if the lift request are pending then we will move this lift after becoming free
+    liftRequestQueue.length > 0 && moveLift(liftRequestQueue[0])
   }, closeTiming);
 };
 
@@ -57,19 +60,28 @@ const calculateClosestLift = (floorNum) => {
   return closest;
 };
 
-const handleFloorBtn = (position) => {
-  // getting a free lift
+const moveLift = (position) => {
+  liftRequestQueue.shift();
   const freeLift = calculateClosestLift(position);
   // distance lift shoult travel
   const distance = 165 * (position - 1);
-  if (freeLift) {
-    // getting the lift position from calling position
-    const liftPosition = Math.abs(
-      Number(freeLift.dataset.liftPosition) - position
-    );
-    freeLift.style.transform = `translateY(-${distance}px)`;
-    freeLift.style.transition = `all ${2 * liftPosition}s linear`;
-    openCloseDoors(freeLift, position);
+  // getting the lift position from calling position
+  const liftPosition = Math.abs(
+    Number(freeLift.dataset.liftPosition) - position
+  );
+  freeLift.style.transform = `translateY(-${distance}px)`;
+  freeLift.style.transition = `all ${2 * liftPosition}s linear`;
+  openCloseDoors(freeLift, position);
+};
+
+const handleFloorBtn = (position) => {
+  liftRequestQueue = [...liftRequestQueue, position];
+  // getting a free lift
+  const freeLift = calculateClosestLift(position);
+  if (!!freeLift === false) {
+    return;
+  } else {
+    moveLift(position);
   }
 };
 
