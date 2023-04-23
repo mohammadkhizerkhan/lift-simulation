@@ -38,8 +38,7 @@ const openCloseDoors = (lift, position) => {
     lift.childNodes[1].classList.remove("right-door-open");
     // making lift free after doors are closed
     lift.setAttribute("data-lift-status", "free");
-    // if the lift request are pending then we will move this lift after becoming free
-    liftRequestQueue.length > 0 && moveLift(liftRequestQueue[0])
+    liftRequestQueue.length>0&&moveLift(liftRequestQueue[0])
   }, closeTiming);
 };
 
@@ -62,9 +61,9 @@ const calculateClosestLift = (floorNum) => {
 
 const moveLift = (position) => {
   liftRequestQueue.shift();
-  const freeLift = calculateClosestLift(position);
   // distance lift shoult travel
   const distance = 165 * (position - 1);
+  const freeLift = calculateClosestLift(position);
   // getting the lift position from calling position
   const liftPosition = Math.abs(
     Number(freeLift.dataset.liftPosition) - position
@@ -78,7 +77,7 @@ const handleFloorBtn = (position) => {
   liftRequestQueue = [...liftRequestQueue, position];
   // getting a free lift
   const freeLift = calculateClosestLift(position);
-  if (!!freeLift === false) {
+  if (!freeLift) {
     return;
   } else {
     moveLift(position);
